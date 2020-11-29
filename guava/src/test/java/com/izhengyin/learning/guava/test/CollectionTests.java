@@ -62,6 +62,105 @@ public class CollectionTests {
 
     }
 
+    @Test
+    public void bimap(){
+        BiMap<Integer,String> biMap = HashBiMap.create();
+        IntStream.range(0,10)
+                .forEach(i -> {
+                    biMap.put(i,"i-"+i);
+                });
+        System.out.println("biMap "+biMap);
+        //inverse方法会返回一个反转的BiMap，但是注意这个反转的map不是新的map对象，它实现了一种视图关联，这样你对于反转后的map的所有操作都会影响原先的map对象。
+        BiMap<String,Integer> inverseBiMap = biMap.inverse();
+        System.out.println("inverse biMap "+inverseBiMap);
+        Assert.assertEquals(inverseBiMap.get("i-1"),new Integer(1));
+        //原值修改，反转对象也会跟着被修改
+        biMap.put(100,"i-100");
+        System.out.println("inverse biMap "+inverseBiMap);
+        Assert.assertEquals(inverseBiMap.get("i-100"),new Integer(100));
+    }
+
+    @Test
+    public void table(){
+        // Table<R, C, V> <行、列、值>
+        Table<String, Integer, String> aTable = HashBasedTable.create();
+        StringBuilder builder = new StringBuilder();
+        for (char r = 'A'; r <= 'C'; ++r) {
+            for (Integer c = 1; c <= 3; ++c) {
+                aTable.put(Character.toString(r), c, String.format("%s%d", r, c));
+            }
+        }
+        //获取第二列
+        Map<String,String> column2 = aTable.column(2);
+        Assert.assertEquals(column2.get("A"),"A2");
+        Assert.assertEquals(column2.get("B"),"B2");
+        Assert.assertEquals(column2.get("C"),"C2");
+        //获取第B行
+        Map<Integer,String> rowB = aTable.row("B");
+        Assert.assertEquals(rowB.get(1),"B1");
+        Assert.assertEquals(rowB.get(2),"B2");
+        Assert.assertEquals(rowB.get(3),"B3");
+        //检查是否包含D行1列
+        Assert.assertFalse(aTable.contains("D", 1));
+        //检查是否包含第3列
+        Assert.assertTrue(aTable.containsColumn(3));
+        Assert.assertTrue(aTable.containsRow("C"));
+        System.out.println(aTable.columnMap());
+        System.out.println(aTable.rowMap());
+        Assert.assertEquals(aTable.remove("B", 3),"B3");
+    }
+
+    @Test
+    public void classToInstanceMap(){
+        ClassToInstanceMap<Number> numberDefaults = MutableClassToInstanceMap.create();
+        numberDefaults.putInstance(Integer.class, 0);
+        numberDefaults.putInstance(Double.class, 1.1d);
+        numberDefaults.putInstance(Float.class, 2.2f);
+        System.out.println(numberDefaults.keySet());
+        System.out.println(numberDefaults.values());
+        Assert.assertEquals(numberDefaults.get(Integer.class),new Integer(0));
+        Assert.assertEquals(numberDefaults.get(Double.class),new Double(1.1));
+        Assert.assertEquals(numberDefaults.get(Float.class),new Float(2.2));
+    }
+
+    @Test
+    public void rangeSet(){
+        RangeSet<Integer> rangeSet = TreeRangeSet.create();
+        rangeSet.add(Range.closed(1, 10)); // {[1, 10]}
+        rangeSet.add(Range.closedOpen(11, 15)); // disconnected range: {[1, 10], [11, 15)}
+        rangeSet.add(Range.closedOpen(15, 20)); // connected range; {[1, 10], [11, 20)}
+        rangeSet.add(Range.openClosed(0, 0)); // empty range; {[1, 10], [11, 20)}
+        rangeSet.remove(Range.open(5, 10)); // splits [1, 10]; {[1, 5], [10, 10], [11, 20)}
+        rangeSet.asRanges().forEach(System.out::println);
+
+    }
+
+    @Test
+    public void rangeMap(){
+        RangeMap<Integer, String> rangeMap = TreeRangeMap.create();
+        rangeMap.put(Range.closed(1, 10), "foo"); // {[1, 10] => "foo"}
+        rangeMap.put(Range.open(3, 6), "bar"); // {[1, 3] => "foo", (3, 6) => "bar", [6, 10] => "foo"}
+        rangeMap.put(Range.open(10, 20), "foo"); // {[1, 3] => "foo", (3, 6) => "bar", [6, 10] => "foo", (10, 20) => "foo"}
+        rangeMap.remove(Range.closed(5, 11)); // {[1, 3] => "foo", (3, 5) => "bar", (11, 20) => "foo"}
+        int a = 2;
+        int b = 5;
+        int c = 10;
+        rangeMap.asMapOfRanges()
+                .forEach((range,value) -> {
+                    System.out.println(range +" -> "+value);
+                    if(range.contains(a)){
+                        Assert.assertEquals(value,"foo");
+                    }
+                    if(range.contains(b)){
+                        Assert.assertEquals(value,"bar");
+                    }
+                    if(range.contains(c)){
+                        Assert.assertEquals(value,"foo");
+                    }
+                });
+    }
+
+
     @Data
     @ToString
     private static class Student{
