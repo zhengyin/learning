@@ -14,12 +14,9 @@ public class QuickSort {
         System.out.println(JSON.toJSONString(arr));
     }
 
-
-
     public static void quick_sort(int[] arr){
         quick_sort_c(arr,0,arr.length - 1);
     }
-
 
     public static void quick_sort_c(int[] arr , int s , int e){
         if(s >= e){
@@ -43,10 +40,7 @@ public class QuickSort {
                 i++;
             }
         }
-
-
         System.out.println(JSON.toJSONString(arr));
-
         return i;
     }
 

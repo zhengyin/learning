@@ -15,12 +15,17 @@
     </properties>
     <modules>
         <module>algorithm</module>
-        <module>data-structure</module>
         <module>java-tips</module>
         <module>guava</module>
+        <module>reactor</module>
     </modules>
 
     <dependencies>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-logging</artifactId>
+            <version>2.3.0.RELEASE</version>
+        </dependency>
         <!-- https://mvnrepository.com/artifact/com.alibaba/fastjson -->
         <dependency>
             <groupId>com.alibaba</groupId>

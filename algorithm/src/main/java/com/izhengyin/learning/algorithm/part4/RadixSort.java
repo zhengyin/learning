@@ -62,27 +62,4 @@ public class RadixSort {
 
     }
 
-    private static void main(int[] arr){
-        for (int n=0;n<4;n++){
-            System.out.println(n+" --- ");
-            int[] tmp = new int[10];
-            for (int i = 0; i< arr.length;i ++){
-                int baseNum = arr[i] %  (int) Math.pow(10,n + 1);
-                if(n > 0){
-                    baseNum = baseNum / (int) Math.pow(10 , n);
-                }
-                tmp[baseNum] = arr[i];
-            }
-            System.out.println(JSON.toJSONString(tmp));
-            int index = 0;
-            for (int v : tmp){
-                if(v > 0){
-                    arr[index] = v;
-                    index ++;
-                }
-            }
-            System.out.println(JSON.toJSONString(arr));
-        }
-    }
-
 }
