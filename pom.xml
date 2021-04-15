@@ -18,6 +18,7 @@
         <module>java-tips</module>
         <module>guava</module>
         <module>reactor</module>
+        <module>refactor</module>
     </modules>
 
     <dependencies>
